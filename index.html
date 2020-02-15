@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>記事本</title>
+    <!-- Bootstrap 4 CSS 的 CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
+        crossorigin="anonymous">
+    <!-- Ggoogle Material Icons 的 CDN -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+	
+    <style>
+        body {
+			font-family: 'Noto Sans TC',Microsoft JhengHei, sans-serif;
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- Vue實例的掛載點 -->
+    <div id="app">
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container text-center">
+                <h1 class="display-4">我的簡易記事本<img class="img-fluid" src="https://img.icons8.com/dusk/100/000000/note.png"></h1>
+                <p class="lead">你可以修改、刪除或添加事項。</p>
+            </div>
+        </div>
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="card text-center">
+                        <div class="card-header">
+                            <h3>新增記事</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">摘要</span>
+                                </div>
+                                <input type="text" class="form-control" v-model="newNote.name" placeholder="請填入記事摘要(最多6字)"
+                                    aria-label="Username" aria-describedby="basic-addon1" maxlength="6">
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">內容</span>
+                                </div>
+                                <input type="text" class="form-control" v-model="newNote.content" placeholder="請輸入記事內容(最多18字)"
+                                    aria-label="Username" aria-describedby="basic-addon1" maxlength="18">
+                            </div>
+                            <button class='btn btn-primary' @click='addNote'>新增</button>
+							<div id="warn" class="alert alert-warning" role="alert" v-if="isShow">
+							  要輸入摘要與內容喔!
+							</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <h3 class='text-center'>清單</h3>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr class="text-center">
+                                <th>名稱</th>
+                                <th>內容</th>
+								<th>狀態</th>
+                                <th colspan="2">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="note of notes">
+                                <td v-bind:style="{textDecoration: note.textDecorationStyle}">{{ note.name }}</td>
+                                <td v-bind:style="{textDecoration: note.textDecorationStyle}">{{ note.content }}</td>
+								<td>{{ note.isDone }}</td>
+                                <td class="text-center">
+
+                                    <button class='btn  btn-danger btn-sm' @click='selectNote(note)'
+                                        data-toggle="modal" data-target="#deleteModal">
+                                        <i class='material-icons'>delete</i>
+                                    </button>
+									<button class='btn  btn-info btn-sm' @click='selectNote(note)'
+									    data-toggle="modal" data-target="#editModel">
+									    <i class='material-icons'>edit</i>
+									</button>
+									<button class='btn  btn-primary btn-sm' @click='selectNote(note);Done(noteSelected)'>
+									    <i class='material-icons'>done_outline</i>
+									</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+		
+		<!-- Modal -->
+		<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog"
+		    aria-labelledby="exampleModalLabel" aria-hidden="true">
+		    <div class="modal-dialog" role="document">
+		        <div class="modal-content">
+		            <div class="modal-header">
+		                <h5 class="modal-title" id="exampleModalLabel">刪除 {{
+		                    noteSelected.name}}</h5>
+		                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		                    <span aria-hidden="true">&times;</span>
+		                </button>
+		            </div>
+		            <div class="modal-body">
+		                是否真的要刪除這筆{{ noteSelected.content }}記事紀錄呢？
+		            </div>
+		            <div class="modal-footer">
+		                <button type="button" class="btn btn-secondary" data-dismiss="modal">放棄</button>
+		                <button type="button" class="btn btn-primary" v-on:click='deleteNote(noteSelected)'>刪除</button>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+		
+		<div class="modal fade" id="editModel" tabindex="-1" role="dialog"
+		    aria-labelledby="exampleModalLabel" aria-hidden="true">
+		    <div class="modal-dialog" role="document">
+		        <div class="modal-content">
+		            <div class="modal-header">
+		                <h5 class="modal-title" id="exampleModalLabel">修改 {{
+		                    noteSelected.name}}</h5>
+		                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		                    <span aria-hidden="true">&times;</span>
+		                </button>
+		            </div>
+		            <div class="modal-body">
+		                <div class="input-group mb-3">
+		                    <div class="input-group-prepend">
+		                        <span class="input-group-text" id="basic-addon1">摘要</span>
+		                    </div>
+		                    <input type="text" class="form-control" v-model="newNote.name" placeholder="請填入記事摘要"
+		                        aria-label="Username" aria-describedby="basic-addon1">
+		                </div>
+		                <div class="input-group mb-3">
+		                    <div class="input-group-prepend">
+		                        <span class="input-group-text" id="basic-addon1">內容</span>
+		                    </div>
+		                    <input type="text" class="form-control" v-model="newNote.content" placeholder="請輸入記事內容"
+		                        aria-label="Username" aria-describedby="basic-addon1">
+		                </div>
+		            </div>
+		            <div class="modal-footer">
+		                <button type="button" class="btn btn-secondary" data-dismiss="modal">放棄</button>
+		                <button type="button" class="btn btn-primary" v-on:click='editNotes(noteSelected)'>確認</button>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+    </div>
+
+    <!-- Vue 的 CDN -->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+
+    <!-- Bootstrap 4 JavaScript 的 CDN -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+
+    <!-- Vue實例的程式碼 -->
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                noteSelected: {
+                    name: '',
+                    content: '',
+					isDone: '未完成',
+					textDecorationStyle: ''
+                },
+                newNote: {
+                    name: '',
+                    content: '',
+					isDone: '未完成',
+					textDecorationStyle: ''
+                },
+                notes: JSON.parse(localStorage.getItem('notes')) || [],
+				isShow: false
+            },
+            watch: {
+                notes: {
+                    handler: 'saveNotes',
+                    deep: true
+                }
+            },
+            methods: {
+                selectNote(note) {
+                    this.noteSelected.name = note.name
+                    this.noteSelected.content = note.content
+					this.noteSelected.isDone = note.isDone
+					this.noteSelected.textDecorationStyle = note.textDecorationStyle
+                },
+                addNote() {
+                    if (this.newNote.name.trim().length == 0 || this.newNote.content.trim().length == 0) {
+                        this.isShow = true
+                        return
+                    }
+					else{
+						this.isShow = false
+					}
+                    const note = {
+                        name: this.newNote.name,
+                        content: this.newNote.content,
+						isDone: '未完成',
+						textDecorationStyle: '',
+                        created: new Date()
+                    }
+                    this.notes.push(note)
+                    this.newNote.content = ''
+                    this.newNote.name = ''
+                },
+                deleteNote(note) {
+                    // 判斷目前選定的note位置陣列中的位置
+                    var found = false;
+                    for (var i = 0; i < this.notes.length; i++) {
+                        if (this.notes[i].name == note.name) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    // 如果有找到就刪除
+                    if (found) {
+                        this.notes.splice(i, 1)
+                    }
+                    // 隱藏刪除視窗
+                    $('#deleteModal').modal('hide')
+                },
+                saveNotes() {
+                    localStorage.setItem('notes', JSON.stringify(this.notes))
+                    console.log('新記事已儲存', new Date())
+                },
+				editNotes(note) {
+					for (var i = 0; i < this.notes.length; i++) {
+						if (this.notes[i].name == note.name) {
+							this.notes[i].content = this.newNote.content
+							this.notes[i].name = this.newNote.name
+							this.notes[i].isDone = '未完成'
+							this.notes[i].textDecorationStyle = ''
+							break;
+						}
+					}
+					
+					this.newNote.content = ''
+					this.newNote.name = ''
+					$('#editModel').modal('hide')
+				},
+				Done(note) {
+					for (var i = 0; i < this.notes.length; i++) {
+						if (this.notes[i].name == note.name) {
+							this.notes[i].isDone = '完成'
+							this.notes[i].textDecorationStyle = 'line-through'
+						}
+					}
+					
+				},
+            }
+        })
+    </script>
+</body>
+
+</html>
