@@ -21,6 +21,37 @@
 			background-image: url(bg.jpg);
 		}
 		
+		@keyframes jittery {
+		  5%,
+		  50% {
+		    transform: scale(1);
+		  }
+		  10% {
+		    transform: scale(0.9);
+		  }
+		  15% {
+		    transform: scale(1.15);
+		  }
+		  20% {
+		    transform: scale(1.15) rotate(-5deg);
+		  }
+		  25% {
+		    transform: scale(1.15) rotate(5deg);
+		  }
+		  30% {
+		    transform: scale(1.15) rotate(-3deg);
+		  }
+		  35% {
+		    transform: scale(1.15) rotate(2deg);
+		  }
+		  40% {
+		    transform: scale(1.15) rotate(0);
+		  }
+		}
+		
+		.btn-jittery {
+		  animation: jittery 4s infinite;
+		}
     </style>
 </head>
 
@@ -57,7 +88,7 @@
                                 <input type="text" class="form-control" v-model="newNote.content" placeholder="請輸入記事內容(最多18字)"
                                     aria-label="Username" aria-describedby="basic-addon1" maxlength="18">
                             </div>
-                            <button class='btn btn-primary' @click='addNote'>新增</button>
+                            <button class='btn btn-primary btn-jittery' @click='addNote'>新增</button>
 							<div id="warn" class="alert alert-warning" role="alert" v-if="isShow">
 							  要輸入摘要與內容喔!
 							</div>
@@ -175,7 +206,7 @@
 				  <p>按下<button type="button" class="btn btn-info"><i class="material-icons">edit</i></button> 即可更改記事</p>
 				  <hr>
 				  <h5>刪除記事</h5>
-				  <p><button type="button" class="btn btn-danger"><i class="material-icons">delete</i></button> 即可</p>
+				  <p>按下<button type="button" class="btn btn-danger"><i class="material-icons">delete</i></button> 即可</p>
 				</div>
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -183,6 +214,13 @@
 		    </div>
 		  </div>
 		</div>
+		
+		<audio src="recycle.wav" id="delete_audio">
+		  Your browser does not support the <code>audio</code> element.
+		</audio>
+		<audio src="drawing_on_paper_with_pencil%20(mp3cut.net).mp3" id="drawing_on_paper_audio">
+		  Your browser does not support the <code>audio</code> element.
+		</audio>
 		
     </div>
 	
@@ -210,6 +248,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js" integrity="sha256-nZaxPHA2uAaquixjSDX19TmIlbRNCOrf5HO1oHl5p70=" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.js"></script>
     <script>
+		var delete_audio = document.getElementById("delete_audio");
+		var drawing_on_paper_audio = document.getElementById("drawing_on_paper_audio");
 		
 		$(function () {
 		  $('[data-toggle="tooltip"]').tooltip()
@@ -458,6 +498,10 @@
                     }
                     // 隱藏刪除視窗
                     $('#deleteModal').modal('hide')
+					
+					//播放音訊
+					delete_audio.play()
+					
                 },
                 saveNotes() {
                     localStorage.setItem('notes', JSON.stringify(this.notes))
@@ -477,6 +521,7 @@
 					this.newNote.content = ''
 					this.newNote.name = ''
 					$('#editModel').modal('hide')
+					drawing_on_paper_audio.play()
 				},
 				Done(note) {
 					for (var i = 0; i < this.notes.length; i++) {
@@ -490,6 +535,7 @@
 					switch(now_weekday){
 						case 0:
 							score[0] += 1;
+							
 							break;
 						case 1:
 							score[1] += 1;
