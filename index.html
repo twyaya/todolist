@@ -102,6 +102,7 @@
                             <tr class="text-center">
                                 <th>名稱</th>
                                 <th>內容</th>
+								<th>時間</th>
 								<th>狀態</th>
                                 <th colspan="2">操作</th>
                             </tr>
@@ -110,6 +111,7 @@
                             <tr v-for="note of notes">
                                 <td v-bind:style="{textDecoration: note.textDecorationStyle}">{{ note.name }}</td>
                                 <td v-bind:style="{textDecoration: note.textDecorationStyle}">{{ note.content }}</td>
+								<td v-bind:style="{textDecoration: note.textDecorationStyle}">{{ note.save_time }}</td>
 								<td>{{ note.isDone }}</td>
                                 <td class="text-center">
 
@@ -446,6 +448,7 @@
                     name: '',
                     content: '',
 					isDone: '未完成',
+					save_time: '',
 					textDecorationStyle: ''
                 },
                 notes: JSON.parse(localStorage.getItem('notes')) || [],
@@ -463,6 +466,7 @@
                     this.noteSelected.content = note.content
 					this.noteSelected.isDone = note.isDone
 					this.noteSelected.textDecorationStyle = note.textDecorationStyle
+					this.noteSelected.save_time = note.save_time
                 },
                 addNote() {
                     if (this.newNote.name.trim().length == 0 || this.newNote.content.trim().length == 0) {
@@ -477,6 +481,7 @@
                         content: this.newNote.content,
 						isDone: '未完成',
 						textDecorationStyle: '',
+						save_time: this.noteSelected.save_time = moment().format('lll'),
                         created: new Date()
                     }
                     this.notes.push(note)
@@ -514,6 +519,7 @@
 							this.notes[i].name = this.newNote.name
 							this.notes[i].isDone = '未完成'
 							this.notes[i].textDecorationStyle = ''
+							this.notes[i].save_time = moment().format('lll')
 							break;
 						}
 					}
@@ -535,7 +541,6 @@
 					switch(now_weekday){
 						case 0:
 							score[0] += 1;
-							
 							break;
 						case 1:
 							score[1] += 1;
