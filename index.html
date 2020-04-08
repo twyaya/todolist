@@ -15,6 +15,7 @@
     <style>
         body {
 			font-family: 'Noto Sans TC',Microsoft JhengHei, sans-serif;
+			background-image: url(back2.jpg);
         }
 		
 		.card{
@@ -23,6 +24,14 @@
 		
 		.jumbotron{
 			background-image: url(bg.jpg);
+		}
+		
+		#explanation{
+			font-weight: bold;
+		}
+		
+		.red{
+			color: #28a745;
 		}
 		
 		@keyframes jittery {
@@ -65,11 +74,12 @@
         <div class="jumbotron jumbotron-fluid">
             <div class="container text-center">
                 <h1 class="display-4">我的簡易記事本<img class="img-fluid" src="https://img.icons8.com/dusk/100/000000/note.png"></h1>
-                <p class="lead">你可以修改、刪除或添加事項。</p>
+                <p class="lead" id="explanation">你可以<span>修改</span>、<span>刪除</span>或<span>添加</span>記事，並查看<span>績效</span>。</p>
 				<p class="lead" id="time">{{ now_time }}</p>
 				<button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#teach">教學</button>
             </div>
         </div>
+		
         <div class="container mt-4">
             <div class="row">
                 <div class="col-sm-4">
@@ -99,7 +109,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-8">
+                <div class="col-sm-8 card">
                     <h3 class='text-center'>清單</h3>
                     <table class="table table-striped">
                         <thead>
@@ -176,15 +186,15 @@
 		                    <div class="input-group-prepend">
 		                        <span class="input-group-text" id="basic-addon1">摘要</span>
 		                    </div>
-		                    <input type="text" class="form-control" v-model="newNote.name" placeholder="請填入記事摘要"
-		                        aria-label="Username" aria-describedby="basic-addon1">
+		                    <input type="text" class="form-control" v-model="newNote.name" placeholder="請填入記事摘要(最多6字)"
+		                        maxlength="6" aria-label="Username" aria-describedby="basic-addon1">
 		                </div>
 		                <div class="input-group mb-3">
 		                    <div class="input-group-prepend">
 		                        <span class="input-group-text" id="basic-addon1">內容</span>
 		                    </div>
-		                    <input type="text" class="form-control" v-model="newNote.content" placeholder="請輸入記事內容"
-		                        aria-label="Username" aria-describedby="basic-addon1">
+		                    <input type="text" class="form-control" v-model="newNote.content" placeholder="請輸入記事內容(最多18字)"
+		                        maxlength="6" aria-label="Username" aria-describedby="basic-addon1">
 		                </div>
 		            </div>
 		            <div class="modal-footer">
@@ -230,13 +240,15 @@
 		
     </div>
 	
-	<div class="container">
+	<br>
+	
+	<div class="container card">
 		<div class="row">
 			<div class="col-sm-8">
 				<canvas id="myChart" width="400" height="400"></canvas>
 			</div>
 			<div class="col-sm-4">
-				<h3>這是您的績效(開發中!)</h3>
+				<h4 align="center">這是您的績效<span class="badge badge-success">New</span></h4>
 			</div>
 		</div>
 	</div>
@@ -276,7 +288,7 @@
 		        LLLL: 'YYYY年MMMD日ddddAh點mm分',
 		        l: 'YYYY-MM-DD',
 		        ll: 'YYYY年MMMD日',
-		        lll: 'YYYY年MMMD日Ah點mm分',
+		        lll: 'MMMD日Ah點mm分',
 		        llll: 'YYYY年MMMD日ddddAh點mm分'
 		      },
 		      meridiemParse: /凌晨|早上|上午|中午|下午|晚上/,
