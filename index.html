@@ -74,13 +74,19 @@
         <div class="jumbotron jumbotron-fluid">
             <div class="container text-center">
                 <h1 class="display-4">我的簡易記事本<img class="img-fluid" src="https://img.icons8.com/dusk/100/000000/note.png"></h1>
-                <p class="lead" id="explanation">你可以<span>修改</span>、<span>刪除</span>或<span>添加</span>記事，並查看<span>績效</span>。</p>
+                <p class="lead" id="explanation">你可以<span>修改</span>、<span>刪除</span>或按Enter<span>添加</span>記事，並查看<span>績效</span>。</p>
 				<p class="lead" id="time">{{ now_time }}</p>
 				<button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#teach">教學</button>
             </div>
         </div>
 		
         <div class="container mt-4">
+			<div align="center">
+				<div class="btn-group" role="group" aria-label="Basic example">
+					<button type="button" class="btn btn-secondary btn-lg material-icons" data-toggle="modal" data-target="#setting">settings</button>
+				</div>
+			</div>
+			
             <div class="row">
                 <div class="col-sm-4">
                     <div class="card text-center">
@@ -92,14 +98,14 @@
                                 <div class="input-group-prepend">
                                     <span class="input-group-text" id="basic-addon1">摘要</span>
                                 </div>
-                                <input type="text" class="form-control" v-model="newNote.name" placeholder="請填入記事摘要(最多6字)"
+                                <input type="text" class="form-control" v-model="newNote.name" v-on:keyup.enter="addNote" placeholder="請填入記事摘要(最多6字)"
                                     aria-label="Username" aria-describedby="basic-addon1" maxlength="6">
                             </div>
                             <div class="input-group mb-3">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text" id="basic-addon1">內容</span>
                                 </div>
-                                <input type="text" class="form-control" v-model="newNote.content" placeholder="請輸入記事內容(最多18字)"
+                                <input type="text" class="form-control" v-model="newNote.content" v-on:keyup.enter="addNote" placeholder="請輸入記事內容(最多18字)"
                                     aria-label="Username" aria-describedby="basic-addon1" maxlength="18">
                             </div>
                             <button class='btn btn-primary btn-jittery' @click='addNote'>新增</button>
@@ -231,6 +237,36 @@
 		  </div>
 		</div>
 		
+		<div class="modal fade" id="setting" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title" id="exampleModalLabel">設定</h5>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		      </div>
+				<div class="modal-body">
+				  <form>
+				    <div class="form-group">
+				      <label for="formControlRange">音效大小</label>
+				      <input type="range" min="0" max="1" step="0.1" class="form-control-range" id="formControlRange" v-model="sound_volume">
+				    </div>
+				  </form>
+				  <hr>
+				  <h5>暗色模式</h5>
+				  <p>按下<button type="button" class="btn btn-info"><i class="material-icons">edit</i></button>即可更改記事</p>
+				  <hr>
+				  <h5>其他模式</h5>
+				  <p>按下<button type="button" class="btn btn-danger"><i class="material-icons">delete</i></button> 即可</p>
+				</div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		
 		<audio src="recycle.wav" id="delete_audio">
 		  Your browser does not support the <code>audio</code> element.
 		</audio>
@@ -272,6 +308,8 @@
 		$(function () {
 		  $('[data-toggle="tooltip"]').tooltip()  //啟用提示
 		})
+		
+		
 		
 		moment.locale('zh-tw', {     //中文化
 		      months: '一月_二月_三月_四月_五月_六月_七月_八月_九月_十月_十一月_十二月'.split('_'),
@@ -412,7 +450,7 @@
 		
 		
 		
-        new Vue({
+        a = new Vue({
             el: '#app',
             data: {
 				myChart : new Chart(ctx, {
@@ -469,13 +507,19 @@
 					color: ''
                 },
                 notes: JSON.parse(localStorage.getItem('notes')) || [],  //儲存
-				isShow: false
+				isShow: false,
+				sound_volume: 0
             },
             watch: {
                 notes: {
                     handler: 'saveNotes',  //監聽
                     deep: true
-                }
+                },
+				sound_volume: function() {
+					delete_audio.volume = this.sound_volume
+					drawing_on_paper_audio.volume = this.sound_volume
+					console.log(document.getElementById("drawing_on_paper_audio").volume)
+				}
             },
             methods: {
                 selectNote(note) {
@@ -587,6 +631,7 @@
 				},
             }
         })
+		
     </script>
 	
 </body>
