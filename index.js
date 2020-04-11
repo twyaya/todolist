@@ -1,11 +1,11 @@
 		var delete_audio = document.getElementById("delete_audio");  //啟用音效
 		var drawing_on_paper_audio = document.getElementById("drawing_on_paper_audio"); //啟用音效
 		
+		
 		$(function () {
 		  $('[data-toggle="tooltip"]').tooltip()  //啟用提示
 		})
 
-		
 		
 		moment.locale('zh-tw', {     //中文化
 		      months: '一月_二月_三月_四月_五月_六月_七月_八月_九月_十月_十一月_十二月'.split('_'),
@@ -149,7 +149,7 @@
         a = new Vue({
             el: '#app',
             data: {
-				myChart : new Chart(ctx, {
+				myChart : new Chart(ctx, {     //圖表
 					type: 'line',
 					data: {
 						labels: ["週一", "週二", "週三", "週四", "週五", "週六", "週日"],
@@ -204,7 +204,7 @@
                 },
                 notes: JSON.parse(localStorage.getItem('notes')) || [],  //儲存
 				isShow: false,
-				sound_volume: 0,
+				sound_volume: 1,
 				number_of_matters: JSON.parse(localStorage.getItem('number_of_matters')) || 0
             },
             watch: {
@@ -246,6 +246,7 @@
                     this.notes.push(note)
                     this.newNote.content = ''
                     this.newNote.name = ''
+					drawing_on_paper_audio.play()
                 },
                 deleteNote(note) {
                     // 判斷目前選定的note位置陣列中的位置
@@ -253,7 +254,12 @@
                     for (var i = 0; i < this.notes.length; i++) {
                         if (this.notes[i].name == note.name) {
                             found = true;
-                            break;
+                            
+							if (this.notes[i].isDone == "完成"){
+								this.number_of_matters = this.number_of_matters - 1;
+							}
+							
+							break;
                         }
                     }
                     // 如果有找到就刪除
@@ -265,7 +271,9 @@
 					
 					//播放音訊
 					delete_audio.play()
-					this.number_of_matters = this.number_of_matters - 1
+					
+					
+
                 },
                 saveNotes() {
                     localStorage.setItem('notes', JSON.stringify(this.notes))
