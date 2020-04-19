@@ -290,6 +290,7 @@
 							this.notes[i].color = ''
 							this.notes[i].textDecorationStyle = ''
 							this.notes[i].saveTime = moment().format('lll')
+							this.number_of_matters = this.number_of_matters - 1
 							break;
 						}
 					}
@@ -303,7 +304,7 @@
 					for (var i = 0; i < this.notes.length; i++) {
 						if (this.notes[i].name == note.name) {
 							if (this.notes[i].isDone == '未完成'){
-								this.number_of_matters = this.number_of_matters + 1;
+								this.number_of_matters = this.number_of_matters + 1
 								localStorage.setItem('number_of_matters', JSON.stringify(this.number_of_matters))
 								
 								switch(now_weekday){
@@ -329,7 +330,7 @@
 										score[6] += 1;
 										break;
 								}
-								this.myChart.update();  //更新圖表
+								this.myChart.update()  //更新圖表
 							}
 							this.notes[i].isDone = '完成'
 							this.notes[i].color = 'green'
