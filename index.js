@@ -4,9 +4,9 @@
 		
 		$(function () {
 		  $('[data-toggle="tooltip"]').tooltip()  //啟用提示
+		  
 		})
 
-		
 		moment.locale('zh-tw', {     //中文化
 		      months: '一月_二月_三月_四月_五月_六月_七月_八月_九月_十月_十一月_十二月'.split('_'),
 		      monthsShort: '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
@@ -174,7 +174,8 @@
 								'rgba(255, 159, 64, 1)',
 								'rgba(238, 108, 255, 51)'
 							],
-							borderWidth: 1
+							borderWidth: 1,
+							fill: 'start'
 						}]
 					},
 					options: {
@@ -301,39 +302,45 @@
 				Done(note) {
 					for (var i = 0; i < this.notes.length; i++) {
 						if (this.notes[i].name == note.name) {
+							if (this.notes[i].isDone == '未完成'){
+								this.number_of_matters = this.number_of_matters + 1;
+								localStorage.setItem('number_of_matters', JSON.stringify(this.number_of_matters))
+								
+								switch(now_weekday){
+									case 0:
+										score[0] += 1;
+										break;
+									case 1:
+										score[1] += 1;
+										break;
+									case 2:
+										score[2] += 1;
+										break;
+									case 3:
+										score[3] += 1;
+										break;
+									case 4:
+										score[4] += 1;
+										break;
+									case 5:
+										score[5] += 1;
+										break;
+									case 6:
+										score[6] += 1;
+										break;
+								}
+								this.myChart.update();  //更新圖表
+							}
 							this.notes[i].isDone = '完成'
 							this.notes[i].color = 'green'
 							this.notes[i].textDecorationStyle = 'line-through'
+							
+
 						}
 					}
+
 					
-					this.number_of_matters = this.number_of_matters + 1
-					localStorage.setItem('number_of_matters', JSON.stringify(this.number_of_matters))
-					
-					switch(now_weekday){
-						case 0:
-							score[0] += 1;
-							break;
-						case 1:
-							score[1] += 1;
-							break;
-						case 2:
-							score[2] += 1;
-							break;
-						case 3:
-							score[3] += 1;
-							break;
-						case 4:
-							score[4] += 1;
-							break;
-						case 5:
-							score[5] += 1;
-							break;
-						case 6:
-							score[6] += 1;
-							break;
-					}
-					this.myChart.update();  //更新圖表
+
 					
 				},
             }
